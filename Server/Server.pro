@@ -10,7 +10,9 @@ TEMPLATE = app
 
 SOURCES += \
     main.cpp \
-    server.cpp
+    server.cpp \
+    socket.cpp
 
 HEADERS += \
-    server.h
+    server.h \
+    socket.h
