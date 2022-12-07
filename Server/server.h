@@ -2,21 +2,17 @@
 #define SERVER_H
 
 #include <QObject>
-#include <QTcpSocket>
 #include <QTcpServer>
+#include "socket.h"
 
-class Server : public QObject {
+class Server : public QTcpServer {
     Q_OBJECT
 public:
     explicit Server(QObject *parent = nullptr);
-
-signals:
+    void start();
 
 private slots:
     void newConnection();
-
-private:
-    QTcpServer * server;
 };
 
 #endif // SERVER_H
