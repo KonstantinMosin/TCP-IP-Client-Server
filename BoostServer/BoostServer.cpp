@@ -95,7 +95,7 @@ private:
     tcp::acceptor acceptor_;
 };
 
-int main(int argc, char* argv[])
+int main()
 {
     try
     {
