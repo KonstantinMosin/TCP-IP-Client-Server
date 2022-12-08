@@ -99,11 +99,13 @@ int main()
 {
     try
     {
+        //считывание порта из файла
         std::ifstream file("C:\\Users\\Lenovo\\Desktop\\НИЦ\ РАБОТА\\C++\\ConsoleApplication1\\ConsoleApplication1\\port.dat");
         std::string port;
         getline(file, port);
         file.close();
 
+        //запуск сервера по нужному порту
         boost::asio::io_context io_context;
 
         server s(io_context, std::atoi(port.c_str()));
