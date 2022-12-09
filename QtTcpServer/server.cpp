@@ -1,27 +1,26 @@
 #include "server.h"
 
-Server::Server(QObject *parent) : QTcpServer{parent}, timer(new QTimer(this)) {
-    connect(timer, SIGNAL(timeout()), this, SLOT(idle()));
-    timer->start();
-}
-
-void Server::start() {
-    qDebug() << "Listening: " << this->listen(QHostAddress::Any, 8000);
-}
-
-void Server::incomingConnection(qintptr descriptor) {
-    raw_sockets[descriptor] = new Socket(this, descriptor);
-}
-
-void Server::idle() {
-    if (!avalaible_sockets.isEmpty() && !avalaible_sockets.first()->time()) {
-        Socket * socket = avalaible_sockets.first();
-        socket->write("Ok...");
-        avalaible_sockets.erase(avalaible_sockets.begin());
+Server::Server(QObject *parent, QString path) : QTcpServer{parent}, port(8000) {
+    QFile file(path);
+    if (file.open(QIODevice::ReadOnly)) {
+        QString line = file.readAll();
+        port = line.toUInt();
+        file.close();
     }
 }
 
-void Server::update(qintptr descriptor) {
-    avalaible_sockets.insert(raw_sockets[descriptor]->time(), raw_sockets[descriptor]);
-    qDebug() << avalaible_sockets.size();
+void Server::start() {
+    qDebug() << "Listening: " << this->listen(QHostAddress::Any, port) << " at port " << port;
+}
+
+void Server::incomingConnection(qintptr descriptor) {
+    sockets[descriptor] = new Socket(this, descriptor);
+}
+
+void Server::fastResponse(QTcpSocket* socket) {
+    socket->write("BOBUS");
+}
+
+void Server::slowResponse(QTcpSocket* socket) {
+    socket->write("ABOBA");
 }
