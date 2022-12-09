@@ -1,0 +1,37 @@
+syntax = "proto2";
+
+package TestTask.Messages;
+
+message WrapperMessage {
+
+optional FastResponse fast_response = 1;
+
+optional SlowResponse slow_response = 2;
+
+optional RequestForFastResponse request_for_fast_response = 3;
+
+optional RequestForSlowResponse request_for_slow_response = 4;
+
+}
+
+message FastResponse {
+
+required string current_date_time = 1;
+
+}
+
+message SlowResponse {
+
+required uint32 connected_client_count = 1;
+
+}
+
+message RequestForFastResponse {
+
+}
+
+message RequestForSlowResponse {
+
+required uint32 time_in_seconds_to_sleep = 1;
+
+}

@@ -87,7 +87,7 @@ int main()
     try
     {
         //считывание порта из файла
-        std::ifstream file("C:\\Users\\Lenovo\\Desktop\\git\\TCP-IP-Client-Server\\port.dat");
+        std::ifstream file("port.dat");
         std::string port;
         getline(file, port);
         file.close();
