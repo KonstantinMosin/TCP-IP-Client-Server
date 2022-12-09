@@ -6,6 +6,8 @@
 #include <QTcpSocket>
 #include <QDataStream>
 
+#include "protocol.pb.h"
+
 class Socket : public QObject {
     Q_OBJECT
 public:
