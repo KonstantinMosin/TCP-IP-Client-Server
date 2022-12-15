@@ -1,30 +1,34 @@
 #ifndef SOCKET_H
 #define SOCKET_H
 
+#include <QTimer>
 #include <QObject>
 #include <QDateTime>
 #include <QTcpSocket>
 #include <QDataStream>
 
+#include "protocol.pb.h"
+
 class Socket : public QObject {
     Q_OBJECT
 public:
     explicit Socket(QObject * parent, qintptr descriptor);
-    qint32 time();
-    void write(const char * msg);
 
 public slots:
-    void connected();
-    void disconnected();
     void readyRead();
 
+private slots:
+    void slowResponse();
+
 signals:
-    void processed(qintptr descriptor);
+    void timeout(QTcpSocket *);
+    void fastResponse(QTcpSocket * socket);
 
 private:
     QTcpSocket * socket_;
-    qint32 delay;
-    qint32 connected_time;
+
+    TestTask::Messages::WrapperMessage * msg;
+    QTimer * timer;
 };
 
 #endif // SOCKET_H
