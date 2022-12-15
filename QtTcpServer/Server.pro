@@ -10,13 +10,13 @@ TEMPLATE = app
 
 SOURCES += \
     main.cpp \
-    server.cpp \
-    socket.cpp \
-    protocol.pb.cc
+    protocol.pb.cc \
+    tcpserver.cpp \
+    tcpsockethandler.cpp
 
 HEADERS += \
-    server.h \
-    socket.h \
-    protocol.pb.h
+    protocol.pb.h \
+    tcpserver.h \
+    tcpsockethandler.h
 
 LIBS += -L/usr/local/lib -lprotobuf
