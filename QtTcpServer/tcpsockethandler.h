@@ -5,7 +5,7 @@
 #include <QTcpSocket>
 #include <QTimer>
 
-#include "protocol.pb.h"
+#include "message.pb.h"
 
 class TcpSocketHandler : public QObject {
     Q_OBJECT
