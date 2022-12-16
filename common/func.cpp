@@ -9,16 +9,17 @@ string convert_lu_to_string(size_t value) {
 string get_time() {
     using namespace std::chrono;
 
-    int64_t ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+    time_t ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+    time_t s = ms / 1000;
+    
+    auto tm = *std::localtime(&s);
+    std::ostringstream oss;
+    oss << std::put_time(&tm, "%Y%m%dT%H%M%S");
 
-    char buffer[sizeof("YYYYMMDDThhmmss")];
-    time_t now = ms / 1000;
-    strftime(buffer, sizeof(buffer), "%Y%m%dT%H%M%S", gmtime(&now));
+    char buffer[4];
+    snprintf(buffer, 4, "%03ld", ms % 1000);
 
-    char converted_ms[4];
-    snprintf(converted_ms, 4, "%03ld", ms % 1000);
-
-    return string(buffer) + "." + string(converted_ms);
+    return oss.str() + "." + string(buffer);
 }
 
 string fast_response() {
