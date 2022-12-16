@@ -10,12 +10,14 @@ TEMPLATE = app
 
 SOURCES += \
     main.cpp \
-    message.pb.cc \
+    ../common/func.cpp \
+    ../common/message.pb.cc \
     tcpserver.cpp \
     tcpsockethandler.cpp
 
 HEADERS += \
-    message.pb.h \
+    ../common/func.h \
+    ../common/message.pb.h \
     tcpserver.h \
     tcpsockethandler.h
 

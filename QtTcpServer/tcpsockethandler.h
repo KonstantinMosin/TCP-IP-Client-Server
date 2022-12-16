@@ -4,16 +4,18 @@
 #include <QObject>
 #include <QTcpSocket>
 #include <QTimer>
+#include <QDateTime>
 
-#include "message.pb.h"
+#include "../common/message.pb.h"
+#include "../common/func.h"
 
 class TcpSocketHandler : public QObject {
     Q_OBJECT
-    typedef TestTask::Messages::WrapperMessage Message;
 public:
     explicit TcpSocketHandler(QObject * parent = nullptr);
     ~TcpSocketHandler();
     bool setSocketDescriptor(qintptr descriptor);
+    void setConnections(qint16 count);
 
 signals:
     void socketDisconnected(qintptr descriptor);
@@ -30,8 +32,10 @@ private:
     QByteArray * buffer;
     QTimer * timer;
 
-    Message * message;
+    WrapperMessage * message;
     qint32 size;
+
+    qint16 connections;
 };
 
 #endif // TCPSOCKETHANDLER_H

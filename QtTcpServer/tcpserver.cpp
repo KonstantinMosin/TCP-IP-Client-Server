@@ -29,7 +29,7 @@ void TcpServer::incomingConnection(qintptr descriptor) {
     }
 
     sockets[descriptor] = handler;
-
+    handler->setConnections(sockets.size());
     connect(handler, SIGNAL(socketDisconnected(qintptr)), this, SLOT(onSocketDisconnected(qintptr)));
 }
 

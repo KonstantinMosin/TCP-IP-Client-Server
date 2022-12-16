@@ -5,7 +5,7 @@ TcpSocketHandler::TcpSocketHandler(QObject *parent) : QObject{parent} {
     timer = new QTimer();
     timer->setSingleShot(true);
 
-    message = new Message;
+    message = new WrapperMessage;
     size = 0;
 
     qDebug() << this << "created";
@@ -38,17 +38,17 @@ bool TcpSocketHandler::setSocketDescriptor(qintptr descriptor) {
     return true;
 }
 
+void TcpSocketHandler::setConnections(qint16 count) {
+    connections = count;
+}
+
 void TcpSocketHandler::onReadyRead() {
     buffer->append(socket->readAll());
-    qDebug() << "Message: " << *buffer;
 
     if (!size && buffer->size() >= 4) {
-        qDebug() << "count size";
         size = buffer->left(4).toInt();
         buffer->remove(0, 4);
     }
-
-    qDebug() << "Size: " << size << "message: " << *buffer;
 
     if (size <= 0) {
         qDebug() << "Wrong message size";
@@ -77,9 +77,9 @@ void TcpSocketHandler::onReadyRead() {
 }
 
 void TcpSocketHandler::onSlowResponse() {
-    socket->write("Slow response");
+    socket->write(slow_response(connections).data());
 }
 
 void TcpSocketHandler::onFastResponse() {
-   socket->write("Fast response");
+    socket->write(fast_response().data());
 }
