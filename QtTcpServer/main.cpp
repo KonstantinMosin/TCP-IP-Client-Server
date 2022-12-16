@@ -1,12 +1,29 @@
 #include <QCoreApplication>
+#include <QFile>
 
-#include "server.h"
+#include "tcpserver.h"
 
 int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
 
-    Server server(nullptr, "../port.txt");
-    server.start();
+    TcpServer server;
+
+    QHostAddress address = QHostAddress("127.0.0.1");
+    quint16 port = 8000;
+
+    QFile file("../port.txt");
+    if (file.open(QIODevice::ReadOnly)) {
+        QString line = file.readAll();
+        port = line.toUInt();
+        file.close();
+    }
+    else {
+        //handle error
+    }
+
+    if (!server.listen(address, port)) {
+        //handle error
+    }
 
     return a.exec();
 }
