@@ -26,23 +26,23 @@ def make_message(x):
 HOST = "127.0.0.1"
 PORT = 8000
 
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.connect((HOST, PORT))
+while 1:
+    print("0) Disconnect from server.")
+    print("1) Send slow_response.")
+    print("2) Send fast_response.")
     while 1:
-        print("0) Disconnect from server.")
-        print("1) Send slow_response.")
-        print("2) Send fast_response.")
-        while 1:
-            x = int(input())
-            if x > 2 or x < 0:
-                print("Choose correct number!")
-            else:
-                break
-        match x:
-            case 0:
-                print("Disconnected")
-                break
-            case _:
+        x = int(input())
+        if x > 2 or x < 0:
+            print("Choose correct number!")
+        else:
+            break
+    match x:
+        case 0:
+            print("Disconnected")
+            break
+        case _:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.connect((HOST, PORT))
                 message = make_message(x)
                 s.sendall(b"0002")
                 s.sendall(message.SerializeToString())
