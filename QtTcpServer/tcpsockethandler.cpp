@@ -1,7 +1,6 @@
 #include "tcpsockethandler.h"
 
 TcpSocketHandler::TcpSocketHandler(QObject *parent) : QObject{parent} {
-    buffer = new QByteArray();
     timer = new QTimer();
     timer->setSingleShot(true);
 
@@ -12,8 +11,8 @@ TcpSocketHandler::TcpSocketHandler(QObject *parent) : QObject{parent} {
 }
 
 TcpSocketHandler::~TcpSocketHandler() {
-    delete buffer;
     delete timer;
+    delete message;
 
     qDebug() << this << "destroyed";
 }
@@ -43,26 +42,25 @@ void TcpSocketHandler::setConnections(qint16 count) {
 }
 
 void TcpSocketHandler::onReadyRead() {
-    buffer->append(socket->readAll());
+    buffer.append(socket->readAll());
 
-    if (!size && buffer->size() >= 4) {
-        size = buffer->left(4).toInt();
-        buffer->remove(0, 4);
+    // smart ptr please
+    if (buffer.size() >= 4) {
+        char * temp = read(buffer, 4);
+        size = convert_string_to_lu(temp);
+        buffer.remove(0, 4);
+        delete [] temp;
     }
 
-    if (size <= 0) {
-        qDebug() << "Wrong message size";
-        //handle error
+    // smart ptr please
+    if (static_cast<quint32>(buffer.size()) >= size) {
+        char * temp = read(buffer, size);
+        message = parse(temp);
+        delete [] temp;
+    }
+    else {
         return;
     }
-
-    if (buffer->size() < size) {
-        qDebug() << "Message not ready to read";
-        return;
-    }
-
-    QString data = QString(buffer->left(size));
-    message->ParseFromString(data.toStdString());
 
     if (message->has_request_for_fast_response()) {
         emit fastResponse();
@@ -72,6 +70,7 @@ void TcpSocketHandler::onReadyRead() {
     }
     else {
         qDebug() << "Unknown message";
+        socket->write("Unknown message");
         //handle error
     }
 }

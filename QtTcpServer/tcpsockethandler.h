@@ -29,11 +29,11 @@ private slots:
 
 private:
     QTcpSocket * socket;
-    QByteArray * buffer;
+    QByteArray buffer;
     QTimer * timer;
 
     WrapperMessage * message;
-    qint32 size;
+    quint32 size;
 
     qint16 connections;
 };
