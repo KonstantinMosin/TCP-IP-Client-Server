@@ -4,7 +4,7 @@ TcpSocketHandler::TcpSocketHandler(QObject *parent) : QObject{parent} {
     timer = new QTimer();
     timer->setSingleShot(true);
 
-    message = new WrapperMessage;
+    message = new WrapperMessage();
     size = 0;
 
     qDebug() << this << "created";
@@ -21,8 +21,7 @@ bool TcpSocketHandler::setSocketDescriptor(qintptr descriptor) {
     socket = new QTcpSocket();
 
     if (!socket->setSocketDescriptor(descriptor)) {
-        //handle warning
-        qDebug() << "socket underlying";
+        qDebug() << "Socket underlying: " << descriptor << " descriptor already exist";
         socket->deleteLater();
         return false;
     }
@@ -39,6 +38,14 @@ bool TcpSocketHandler::setSocketDescriptor(qintptr descriptor) {
 
 void TcpSocketHandler::setConnections(qint16 count) {
     connections = count;
+}
+
+bool TcpSocketHandler::isOpen() {
+    return socket->isOpen();
+}
+
+void TcpSocketHandler::close() {
+    socket->close();
 }
 
 void TcpSocketHandler::onReadyRead() {
@@ -67,7 +74,6 @@ void TcpSocketHandler::onReadyRead() {
     else {
         qDebug() << "Unknown message";
         socket->write("Unknown message");
-        //handle error
     }
 }
 

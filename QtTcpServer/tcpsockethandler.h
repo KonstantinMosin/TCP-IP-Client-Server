@@ -16,6 +16,8 @@ public:
     ~TcpSocketHandler();
     bool setSocketDescriptor(qintptr descriptor);
     void setConnections(qint16 count);
+    bool isOpen();
+    void close();
 
 signals:
     void socketDisconnected(qintptr descriptor);

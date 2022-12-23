@@ -18,11 +18,11 @@ int main(int argc, char *argv[]) {
         file.close();
     }
     else {
-        //handle error
+        qDebug() << "File would not be open";
     }
 
     if (!server.listen(address, port)) {
-        //handle error
+        qDebug() << "Server would not be listen";
     }
 
     return a.exec();
