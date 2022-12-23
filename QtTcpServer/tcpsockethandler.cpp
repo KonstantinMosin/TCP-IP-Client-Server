@@ -44,19 +44,15 @@ void TcpSocketHandler::setConnections(qint16 count) {
 void TcpSocketHandler::onReadyRead() {
     buffer.append(socket->readAll());
 
-    // smart ptr please
     if (buffer.size() >= 4) {
-        char * temp = read(buffer, 4);
-        size = convert_string_to_lu(temp);
+        QSharedPointer<char> s(read(buffer, 4), [](char * s){ delete [] s; });
+        size = convert_string_to_lu(s.data());
         buffer.remove(0, 4);
-        delete [] temp;
     }
 
-    // smart ptr please
     if (static_cast<quint32>(buffer.size()) >= size) {
-        char * temp = read(buffer, size);
-        message = parse(temp);
-        delete [] temp;
+        QSharedPointer<char> s(read(buffer, size), [](char * s){ delete [] s; });
+        message = parse(s.data());
     }
     else {
         return;
