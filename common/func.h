@@ -1,5 +1,5 @@
-#ifndef FUNC
-#define FUNC
+#ifndef FUNC_H
+#define FUNC_H
 
 #include <string>
 #include <chrono>
