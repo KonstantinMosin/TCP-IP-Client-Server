@@ -5,6 +5,7 @@
 #include <QTcpServer>
 
 #include "tcpsockethandler.h"
+#include "../common/api.h"
 
 class TcpServer : public QTcpServer {
     Q_OBJECT
