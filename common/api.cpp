@@ -1,16 +1,4 @@
-#include "func.h"
-
-char * read(const char * src, size_t n) {
-    char * dest = new char[n];
-    memcpy(dest, src, n);
-    return dest;
-}
-
-WrapperMessage * parse(const char * s) {
-    WrapperMessage * message = new WrapperMessage;
-    message->ParseFromString(s);
-    return message;
-}
+#include "api.h"
 
 string convert_lu_to_string(size_t value) {
     char buffer[5];
@@ -33,9 +21,10 @@ string get_time() {
     using namespace std::chrono;
 
     time_t ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
-    
     time_t s = ms / 1000;
+
     std::tm * tm = std::localtime(&s);
+    
     char buffer[sizeof("YYYYMMDDThhmmss.fff")];
     strftime(buffer, sizeof(buffer) - 3, "%Y%m%dT%H%M%S.", tm);
     snprintf(&buffer[16], 4, "%03ld", ms % 1000);
