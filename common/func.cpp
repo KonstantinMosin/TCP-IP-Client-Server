@@ -1,9 +1,25 @@
 #include "func.h"
 
+char * read(const char * src, size_t n) {
+    char * dest = new char[n];
+    memcpy(dest, src, n);
+    return dest;
+}
+
+WrapperMessage * parse(const char * s) {
+    WrapperMessage * message = new WrapperMessage;
+    message->ParseFromString(s);
+    return message;
+}
+
 string convert_lu_to_string(size_t value) {
     char buffer[5];
     snprintf(buffer, 5, "%04lu", value);
     return string(buffer);
+}
+
+size_t convert_string_to_lu(string s) {
+    return std::stoul(s, nullptr, 0);
 }
 
 string convert_wm_to_string(WrapperMessage * message) {
@@ -23,7 +39,7 @@ string get_time() {
     char buffer[sizeof("YYYYMMDDThhmmss.fff")];
     strftime(buffer, sizeof(buffer) - 3, "%Y%m%dT%H%M%S.", tm);
     snprintf(&buffer[16], 4, "%03ld", ms % 1000);
-    
+
     return string(buffer);
 }
 

@@ -6,8 +6,9 @@
 #include <QTimer>
 #include <QDateTime>
 
+#include "../common/delimitedmessagesstreamparser.h"
 #include "../common/message.pb.h"
-#include "../common/func.h"
+#include "../common/api.h"
 
 class TcpSocketHandler : public QObject {
     Q_OBJECT
@@ -16,6 +17,8 @@ public:
     ~TcpSocketHandler();
     bool setSocketDescriptor(qintptr descriptor);
     void setConnections(qint16 count);
+    bool isOpen();
+    void close();
 
 signals:
     void socketDisconnected(qintptr descriptor);
@@ -28,12 +31,13 @@ private slots:
     void onSlowResponse();
 
 private:
+    typedef DelimitedMessagesStreamParser<WrapperMessage> Parser;
+    Parser parser;
+    std::vector<typename DelimitedMessagesStreamParser<WrapperMessage>::PointerToConstValue> messages;
+
     QTcpSocket * socket;
     QByteArray buffer;
     QTimer * timer;
-
-    WrapperMessage * message;
-    quint32 size;
 
     qint16 connections;
 };

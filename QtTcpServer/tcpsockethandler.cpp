@@ -4,15 +4,11 @@ TcpSocketHandler::TcpSocketHandler(QObject *parent) : QObject{parent} {
     timer = new QTimer();
     timer->setSingleShot(true);
 
-    message = new WrapperMessage;
-    size = 0;
-
     qDebug() << this << "created";
 }
 
 TcpSocketHandler::~TcpSocketHandler() {
     delete timer;
-    delete message;
 
     qDebug() << this << "destroyed";
 }
@@ -21,8 +17,7 @@ bool TcpSocketHandler::setSocketDescriptor(qintptr descriptor) {
     socket = new QTcpSocket();
 
     if (!socket->setSocketDescriptor(descriptor)) {
-        //handle warning
-        qDebug() << "socket underlying";
+        qDebug() << "Socket underlying: " << descriptor << " descriptor already exist";
         socket->deleteLater();
         return false;
     }
@@ -41,44 +36,45 @@ void TcpSocketHandler::setConnections(qint16 count) {
     connections = count;
 }
 
+bool TcpSocketHandler::isOpen() {
+    return socket->isOpen();
+}
+
+void TcpSocketHandler::close() {
+    socket->close();
+}
+
 void TcpSocketHandler::onReadyRead() {
-    buffer.append(socket->readAll());
-
-    // smart ptr please
-    if (buffer.size() >= 4) {
-        char * temp = read(buffer, 4);
-        size = convert_string_to_lu(temp);
-        buffer.remove(0, 4);
-        delete [] temp;
+    printf("reading\n");
+    for (const char byte : socket->readAll()) {
+        const std::list<typename DelimitedMessagesStreamParser<WrapperMessage>::PointerToConstValue> & parsedMessages = parser.parse(std::string(1, byte));
+        for (const DelimitedMessagesStreamParser<WrapperMessage>::PointerToConstValue & message : parsedMessages) {
+            messages.push_back(message);
+        }
     }
 
-    // smart ptr please
-    if (static_cast<quint32>(buffer.size()) >= size) {
-        char * temp = read(buffer, size);
-        message = parse(temp);
-        delete [] temp;
+    for (const auto & message : messages) {
+        if (message->has_request_for_fast_response()) {
+            printf("emit fast response\n");
+            emit fastResponse();
+        }
+        else if (message->has_request_for_slow_response()) {
+            printf("emit slow response\n");
+            timer->start(message->request_for_slow_response().time_in_seconds_to_sleep() * 1000);
+        }
+        else {
+            socket->write("unknown message");
+        }
     }
-    else {
-        return;
-    }
-
-    if (message->has_request_for_fast_response()) {
-        emit fastResponse();
-    }
-    else if (message->has_request_for_slow_response()) {
-        timer->start(message->request_for_slow_response().time_in_seconds_to_sleep() * 1000);
-    }
-    else {
-        qDebug() << "Unknown message";
-        socket->write("Unknown message");
-        //handle error
-    }
+    printf("stop reading\n");
 }
 
 void TcpSocketHandler::onSlowResponse() {
+    printf("send slow response\n");
     socket->write(slow_response(connections).data());
 }
 
 void TcpSocketHandler::onFastResponse() {
+    printf("send fast response\n");
     socket->write(fast_response().data());
 }

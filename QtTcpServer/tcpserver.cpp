@@ -11,7 +11,7 @@ TcpServer::~TcpServer() {
 
 bool TcpServer::listen(QHostAddress address, quint16 port) {
     if (!QTcpServer::listen(address, port)) return false;
-    qDebug() << "Server listen " << address << " on " << port << " port";
+    qDebug() << "Listen " << address << ":" << port;
     return true;
 }
 
@@ -23,7 +23,6 @@ void TcpServer::incomingConnection(qintptr descriptor) {
     TcpSocketHandler * handler = new TcpSocketHandler();
 
     if (!handler->setSocketDescriptor(descriptor)) {
-        //handle error
         handler->deleteLater();
         return;
     }
@@ -34,6 +33,11 @@ void TcpServer::incomingConnection(qintptr descriptor) {
 }
 
 void TcpServer::onSocketDisconnected(qintptr descriptor) {
-    delete sockets[descriptor];
+    TcpSocketHandler * s = sockets[descriptor];
     sockets.remove(descriptor);
+    if (s->isOpen()) {
+        s->disconnect();
+        s->close();
+    }
+    s->deleteLater();
 }
