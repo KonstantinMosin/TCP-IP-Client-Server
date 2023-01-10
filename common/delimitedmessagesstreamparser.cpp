@@ -8,7 +8,7 @@ std::shared_ptr<Message> parseDelimited(const void * data, size_t size, size_t *
         return nullptr;
     }
 
-    string buffer((char *)(data));
+    string buffer((const char *)(data));
     size_t length = convert_string_to_lu(buffer.substr(0, 4));
     if (length > size - 4) {
         return nullptr;
